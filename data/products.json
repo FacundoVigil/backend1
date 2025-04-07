@@ -1,0 +1,16 @@
+[
+  {
+    "title": "Producto de Ejemplo",
+    "description": "Descripción del producto",
+    "code": "ABC123",
+    "price": 100,
+    "status": true,
+    "stock": 50,
+    "category": "Categoría de ejemplo",
+    "thumbnails": [
+      "ruta/imagen1.jpg",
+      "ruta/imagen2.jpg"
+    ],
+    "id": 1
+  }
+]
