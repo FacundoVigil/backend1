@@ -1,0 +1,63 @@
+<h1>Lista de Productos en Tiempo Real</h1>
+<ul id="listaProductos">
+    {{#each products}}
+        <li id="producto-{{this.id}}">{{this.name}} - {{this.price}} <button onclick="eliminarProducto('{{this.id}}')">Eliminar</button></li>
+    {{/each}}
+</ul>
+
+<form id="formAgregar">
+    <input type="text" id="nombreProducto" placeholder="Nombre">
+    <input type="number" id="precioProducto" placeholder="Precio">
+    <button type="submit">Agregar Producto</button>
+</form>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+
+    // Función para renderizar la lista de productos
+    function renderizarLista(productos) {
+        const lista = document.getElementById('listaProductos');
+        lista.innerHTML = ''; // Limpiar la lista antes de actualizar
+
+        productos.forEach(producto => {
+            const nuevoElemento = document.createElement('li');
+            nuevoElemento.setAttribute('id', `producto-${producto.id}`);
+            nuevoElemento.innerHTML = `${producto.name} - ${producto.price} <button onclick="eliminarProducto('${producto.id}')">Eliminar</button>`;
+            lista.appendChild(nuevoElemento);
+        });
+    }
+
+    // Obtener la lista de productos al iniciar la página
+    async function cargarProductos() {
+        const respuesta = await fetch('/api/products'); // Consultar el backend
+        const productos = await respuesta.json();
+        renderizarLista(productos);
+    }
+
+    // Cargar productos cuando la página inicie
+    window.onload = cargarProductos;
+
+    // Escuchar el evento que envía la lista completa desde el backend
+    socket.on('actualizarListaCompleta', (productos) => {
+        renderizarLista(productos);
+    });
+
+    // Enviar nuevo producto al backend
+    document.getElementById('formAgregar').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nombre = document.getElementById('nombreProducto').value;
+        const precio = document.getElementById('precioProducto').value;
+
+        await fetch('/api/products', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: nombre, price: precio })
+        });
+    });
+
+    // Función para eliminar un producto
+    function eliminarProducto(id) {
+        fetch(`/api/products/${id}`, { method: 'DELETE' });
+    }
+</script>
