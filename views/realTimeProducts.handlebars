@@ -15,10 +15,10 @@
 <script>
     const socket = io();
 
-    // Función para renderizar la lista de productos
+
     function renderizarLista(productos) {
         const lista = document.getElementById('listaProductos');
-        lista.innerHTML = ''; // Limpiar la lista antes de actualizar
+        lista.innerHTML = ''; 
 
         productos.forEach(producto => {
             const nuevoElemento = document.createElement('li');
@@ -28,22 +28,21 @@
         });
     }
 
-    // Obtener la lista de productos al iniciar la página
+
     async function cargarProductos() {
-        const respuesta = await fetch('/api/products'); // Consultar el backend
+        const respuesta = await fetch('/api/products'); 
         const productos = await respuesta.json();
         renderizarLista(productos);
     }
 
-    // Cargar productos cuando la página inicie
     window.onload = cargarProductos;
 
-    // Escuchar el evento que envía la lista completa desde el backend
+
     socket.on('actualizarListaCompleta', (productos) => {
         renderizarLista(productos);
     });
 
-    // Enviar nuevo producto al backend
+
     document.getElementById('formAgregar').addEventListener('submit', async (e) => {
         e.preventDefault();
         const nombre = document.getElementById('nombreProducto').value;
@@ -56,7 +55,7 @@
         });
     });
 
-    // Función para eliminar un producto
+
     function eliminarProducto(id) {
         fetch(`/api/products/${id}`, { method: 'DELETE' });
     }

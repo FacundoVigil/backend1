@@ -3,7 +3,7 @@ const path = require('path');
 
 class CartManager {
     constructor() {
-        this.filePath = path.join(__dirname, '../data/carts.json'); // Ruta hacia el archivo JSON
+        this.filePath = path.join(__dirname, '../data/carts.json'); 
     }
 
 
@@ -38,9 +38,9 @@ class CartManager {
         const productIndex = cart.products.findIndex(p => p.product === productId);
 
         if (productIndex !== -1) {
-            cart.products[productIndex].quantity += quantity; // Suma la cantidad enviada en el body
+            cart.products[productIndex].quantity += quantity; 
         } else {
-            cart.products.push({ product: productId, quantity }); // Agrega un nuevo producto con cantidad específica
+            cart.products.push({ product: productId, quantity });
         }
 
         await fs.promises.writeFile(this.filePath, JSON.stringify(carts, null, 2));

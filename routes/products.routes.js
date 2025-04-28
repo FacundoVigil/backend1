@@ -5,7 +5,7 @@ module.exports = (io) => {
     const router = express.Router();
     const productManager = new ProductManager();
 
-    // Obtener todos los productos
+
     router.get('/', async (req, res) => {
         try {
             const products = await productManager.getProducts();
@@ -15,7 +15,7 @@ module.exports = (io) => {
         }
     });
 
-    // Obtener un producto por ID
+
     router.get('/:pid', async (req, res) => {
         try {
             const products = await productManager.getProducts();
@@ -29,19 +29,18 @@ module.exports = (io) => {
         }
     });
 
-// Agregar un producto y emitir la lista actualizada
+
 router.post('/', async (req, res) => {
     try {
         const newProduct = await productManager.addProduct(req.body);
-        const updatedProducts = await productManager.getProducts(); // Obtener lista actualizada
-        io.emit('actualizarListaCompleta', updatedProducts); // Emitir evento con la lista completa
+        const updatedProducts = await productManager.getProducts(); 
+        io.emit('actualizarListaCompleta', updatedProducts); a
         res.status(201).json(newProduct);
     } catch (error) {
         res.status(500).json({ error: 'Error al agregar el producto', details: error.message });
     }
 });
 
-    // Actualizar un producto
     router.put('/:pid', async (req, res) => {
         try {
             const updatedProduct = await productManager.updateProduct(Number(req.params.pid), req.body);
@@ -55,15 +54,15 @@ router.post('/', async (req, res) => {
     });
 
 
-// Eliminar un producto y emitir la lista actualizada
+
 router.delete('/:pid', async (req, res) => {
     try {
         const result = await productManager.deleteProduct(Number(req.params.pid));
         if (result.error) {
             return res.status(404).json(result);
         }
-        const updatedProducts = await productManager.getProducts(); // Obtener lista actualizada
-        io.emit('actualizarListaCompleta', updatedProducts); // Emitir evento con la lista completa
+        const updatedProducts = await productManager.getProducts(); 
+        io.emit('actualizarListaCompleta', updatedProducts); 
         res.status(204).send();
     } catch (error) {
         res.status(500).json({ error: 'Error al eliminar el producto', details: error.message });
