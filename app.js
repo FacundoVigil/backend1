@@ -1,4 +1,3 @@
-// app.js
 
 import express from "express";
 import { engine } from "express-handlebars";
@@ -9,10 +8,10 @@ import mongoose from "mongoose";
 import methodOverride from "method-override";
 
 import router from "./routes/index.routes.js";
-import cartsRouter from "./routes/carts.routes.js"; // Router de carritos
-import { validateObjectId } from "./middlewares/validateObjectId.js"; // Middleware de validación
+import cartsRouter from "./routes/carts.routes.js"; 
+import { validateObjectId } from "./middlewares/validateObjectId.js"; 
 
-// --- Conexión a MongoDB ---
+
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/auraDB";
 
 mongoose.connect(MONGO_URI, {
@@ -25,27 +24,26 @@ mongoose.connect(MONGO_URI, {
   process.exit(1);
 });
 
-// --- Inicialización de Express ---
 const app = express();
 
-// --- Configuración de Handlebars ---
+
 app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 app.set("views", path.resolve("views"));
 
-// --- Middlewares ---
+
 app.use(express.static(path.resolve("public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride("_method")); // <<< Necesario para formularios DELETE/PUT
+app.use(methodOverride("_method")); 
 
-// --- Rutas de la aplicación ---
+
 app.use("/", router);
 
-// Montar middleware de validación y router de carritos con API
+
 app.use("/api/carts", validateObjectId, cartsRouter);
 
-// --- Creación de servidor HTTP y Socket.IO ---
+
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
   cors: {
@@ -54,7 +52,6 @@ const io = new SocketIOServer(server, {
   }
 });
 
-// --- Eventos WebSocket ---
 io.on("connection", socket => {
   console.log(`Cliente conectado: ${socket.id}`);
 
@@ -68,7 +65,7 @@ io.on("connection", socket => {
   });
 });
 
-// --- Arranque del servidor ---
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);

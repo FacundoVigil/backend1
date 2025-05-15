@@ -1,5 +1,3 @@
-// middlewares/validateObjectId.js
-
 import mongoose from 'mongoose';
 
 export function validateObjectId(req, res, next) {
