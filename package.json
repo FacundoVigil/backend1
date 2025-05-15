@@ -1,17 +1,24 @@
 {
-  "name": "preentrega1",
+  "name": "backend1",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Proyecto Backend1 con Express y Handlebars",
+  "type": "module",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "express": "^5.1.0",
-    "express-handlebars": "^8.0.3",
-    "socket.io": "^4.8.1"
-  }
+    "express": "^4.18.2",
+    "express-handlebars": "^6.0.6",
+    "method-override": "^3.0.0",
+    "mongoose": "^8.14.3",
+    "mongoose-paginate-v2": "^1.9.0",
+    "socket.io": "^4.7.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "author": "FacundoVigil",
+  "license": "MIT"
 }

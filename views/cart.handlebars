@@ -1,0 +1,28 @@
+<!-- views/cart.handlebars -->
+
+<h1>Carrito de Compras</h1>
+
+{{#if cart.products.length}}
+  <ul>
+    {{#each cart.products}}
+      <li style="margin-bottom: 20px;">
+        <h3>{{this.product.title}}</h3>
+        <img src="{{this.product.thumbnail}}" alt="{{this.product.title}}" width="150" />
+        <p><strong>Descripción:</strong> {{this.product.description}}</p>
+        <p><strong>Precio:</strong> ${{this.product.price}}</p>
+        <p><strong>Categoría:</strong> {{this.product.category}}</p>
+        <p><strong>Cantidad en carrito:</strong> {{this.quantity}}</p>
+        <form action="/carts/{{../cart._id}}/products/{{this.product._id}}?_method=DELETE" method="POST">
+          <button type="submit">Eliminar del carrito</button>
+        </form>
+        <hr>
+      </li>
+    {{/each}}
+  </ul>
+{{else}}
+  <p>El carrito está vacío.</p>
+{{/if}}
+
+<form action="/carts/{{cart._id}}?_method=DELETE" method="POST">
+  <button type="submit" style="margin-top: 20px;">Vaciar carrito</button>
+</form>

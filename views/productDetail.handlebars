@@ -1,0 +1,28 @@
+<!-- views/productDetail.handlebars -->
+
+<h1>{{product.title}}</h1>
+<img src="{{product.thumbnail}}" alt="{{product.title}}" width="300" />
+<p><strong>Descripción:</strong> {{product.description}}</p>
+<p><strong>Precio:</strong> ${{product.price}}</p>
+<p><strong>Categoría:</strong> {{product.category}}</p>
+<p><strong>Stock disponible:</strong> {{product.stock}}</p>
+
+<form id="addToCartForm" action="/carts/{{cartId}}/products/{{product._id}}" method="POST">
+  <button type="submit">Agregar al carrito</button>
+</form>
+
+<script>
+  // Opcional: evitar recargar la página al agregar producto, usar fetch API
+  const form = document.getElementById('addToCartForm');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const response = await fetch(form.action, {
+      method: 'POST'
+    });
+    if(response.ok) {
+      alert('Producto agregado al carrito!');
+    } else {
+      alert('Error al agregar producto.');
+    }
+  });
+</script>
