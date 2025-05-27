@@ -1,72 +1,64 @@
+import express from 'express';
+import { engine } from 'express-handlebars';
+import mongoose from 'mongoose';
+import passport from './config/passport.config.js';
+import sessionRouter from './routes/sessions.router.js';
+import productsRouter from './routes/products.router.js';
+import cartsRouter from './routes/carts.router.js';
+import viewsRouter from './routes/views.router.js';
+import { Server } from 'socket.io';
+import http from 'http';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 
-import express from "express";
-import { engine } from "express-handlebars";
-import http from "http";
-import { Server as SocketIOServer } from "socket.io";
-import path from "path";
-import mongoose from "mongoose";
-import methodOverride from "method-override";
+dotenv.config();
 
-import router from "./routes/index.routes.js";
-import cartsRouter from "./routes/carts.routes.js"; 
-import { validateObjectId } from "./middlewares/validateObjectId.js"; 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/auraDB";
-
-mongoose.connect(MONGO_URI, {
-  serverSelectionTimeoutMS: 5000,
-  family: 4
-})
-.then(() => console.log("✅ Conectado a MongoDB"))
-.catch(err => {
-  console.error("❌ Error conectando a MongoDB:", err.message);
-  process.exit(1);
-});
+const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/aura';
+const PORT = process.env.PORT || 3000;
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 
 
-app.engine("handlebars", engine());
-app.set("view engine", "handlebars");
-app.set("views", path.resolve("views"));
+mongoose
+  .connect(MONGO_URL)
+  .then(() => console.log('✅ Conectado a MongoDB'))
+  .catch(err => console.error('❌ Error conectando a MongoDB:', err));
 
 
-app.use(express.static(path.resolve("public")));
+app.engine('handlebars', engine());
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'handlebars');
+
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride("_method")); 
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.initialize());  
 
+// Rutas
+app.use('/', viewsRouter);
+app.use('/api/products', productsRouter);
+app.use('/api/carts', cartsRouter);
+app.use('/api/sessions', sessionRouter);
 
-app.use("/", router);
-
-
-app.use("/api/carts", validateObjectId, cartsRouter);
-
-
-const server = http.createServer(app);
-const io = new SocketIOServer(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
-
-io.on("connection", socket => {
-  console.log(`Cliente conectado: ${socket.id}`);
-
-  socket.on("message", payload => {
-    console.log("Mensaje recibido:", payload);
-    socket.broadcast.emit("message", payload);
+// Socket.io
+io.on('connection', socket => {
+  console.log('🔌 Nuevo cliente conectado');
+  socket.on('newMessage', msg => {
+    io.emit('message', msg);
   });
-
-  socket.on("disconnect", () => {
-    console.log(`Cliente desconectado: ${socket.id}`);
+  socket.on('disconnect', () => {
+    console.log('❌ Cliente desconectado');
   });
 });
 
-
-const PORT = process.env.PORT || 3000;
+// Levantar servidor
 server.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+  console.log(`🚀 Servidor escuchando en http://localhost:${PORT}`);
 });
